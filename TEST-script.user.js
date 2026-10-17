@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           Catwar Cleaner & Alerts
 // @namespace      http://tampermonkey.net/
-// @version        5.1
+// @version        5.1.1
 // @description    Подсветка статусов (вкл/выкл) + уведомления по московскому времени.
 // @author         dreaminshadows | Бейлиз (https://catwar.net/cat1638466)
 // @match          *://catwar.su/*
