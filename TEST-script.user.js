@@ -1,15 +1,16 @@
 // ==UserScript==
-// @license      MIT
-// @name         Catwar Cleaner & Alerts
-// @namespace    http://tampermonkey.net/
-// @version      5.0
-// @description  Подсветка статусов (вкл/выкл) + уведомления по московскому времени.
-// @author       Mr.Rometto
-// @match        *://catwar.su/*
-// @match        *://catwar.net/*
-// @match        *://cw3.space/*
-// @run-at       document-end
-// @grant        none
+// @name           Catwar Cleaner & Alerts
+// @namespace      http://tampermonkey.net/
+// @version        5.0
+// @description    Подсветка статусов (вкл/выкл) + уведомления по московскому времени.
+// @author         dreaminshadows | Бейлиз (https://catwar.net/cat1638466)
+// @match          *://catwar.su/*
+// @match          *://catwar.net/*
+// @match          *://cw3.space/*
+// @updateURL      https://raw.githubusercontent.com/dreaminshadows/Catwar-Cleaner-Village/main/TEST-script.user.js
+// @downloadURL    https://raw.githubusercontent.com/dreaminshadows/Catwar-Cleaner-Village/main/TEST-script.user.js
+// @run-at         document-end
+// @grant          none
 // ==/UserScript==
 
 (function() {
