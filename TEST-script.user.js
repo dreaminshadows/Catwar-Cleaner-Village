@@ -51,6 +51,7 @@
 
         const alertBox = document.createElement('div');
         alertBox.id = 'cw-alert-' + alertId;
+        alertBox.className = 'cw-alert-box'; // Класс для легкой очистки
         
         alertBox.style.cssText = `
             position: fixed;
@@ -73,7 +74,6 @@
             animation: cwSlideIn 0.3s ease-out;
         `;
 
-        // Добавляем анимацию только один раз
         if (!document.getElementById('cw-alert-style')) {
             const style = document.createElement('style');
             style.id = 'cw-alert-style';
@@ -117,11 +117,8 @@
     }
 
     function checkTime() {
-        // Показываем уведомления только если мы на игровой странице (есть таблица #cages)
         if (!document.getElementById('cages')) return;
-
         const { hour, minute } = getMoscowTime();
-
         if (hour === 11) showAlert('alert-11');
         if (hour === 15) showAlert('alert-15');
         if (hour === 16 && minute >= 30) showAlert('alert-1630');
@@ -311,7 +308,6 @@
         nav.appendChild(btn);
     }
 
-    // --- ЦИКЛ ДЛЯ ЧИСТИЛЬЩИКА ---
     setInterval(() => {
         try {
             createToggleButton();
@@ -319,9 +315,82 @@
                 updateReferenceColors();
                 applyHighlights();
             }
-        } catch (err) {
-            // Игнорируем ошибки
-        }
+        } catch (err) {}
     }, 100);
 
+
+    // ==========================================
+    // БЛОК 3: ПАНЕЛЬ ТЕСТИРОВАНИЯ
+    // ==========================================
+    function createTestPanel() {
+        if (document.getElementById('cw-test-panel')) return;
+
+        const panel = document.createElement('div');
+        panel.id = 'cw-test-panel';
+        panel.style.cssText = `
+            position: fixed;
+            left: 10px;
+            bottom: 10px;
+            background: rgba(20, 20, 20, 0.9);
+            color: #fff;
+            padding: 10px;
+            border-radius: 6px;
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+            z-index: 100000;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            border: 1px solid #555;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        `;
+        
+        // Делаем панель чуть ярче при наведении
+        panel.onmouseenter = () => panel.style.opacity = '1';
+        panel.onmouseleave = () => panel.style.opacity = '0.7';
+
+        // Заголовок
+        const title = document.createElement('div');
+        title.textContent = 'ТЕСТ УВЕДОМЛЕНИЙ';
+        title.style.cssText = 'font-weight: bold; font-size: 10px; color: #888; margin-bottom: 2px; text-align: center; letter-spacing: 1px;';
+        panel.appendChild(title);
+
+        // Кнопки
+        const btn11 = document.createElement('button');
+        btn11.textContent = 'Показать (11:00)';
+        btn11.style.cssText = 'padding: 4px 8px; cursor: pointer; background: #333; color: #fff; border: 1px solid #555; border-radius: 3px; font-size: 11px;';
+        btn11.onclick = () => { dismissedAlerts.delete('alert-11'); showAlert('alert-11'); };
+        panel.appendChild(btn11);
+
+        const btn15 = document.createElement('button');
+        btn15.textContent = 'Показать (15:00)';
+        btn15.style.cssText = 'padding: 4px 8px; cursor: pointer; background: #333; color: #fff; border: 1px solid #555; border-radius: 3px; font-size: 11px;';
+        btn15.onclick = () => { dismissedAlerts.delete('alert-15'); showAlert('alert-15'); };
+        panel.appendChild(btn15);
+
+        const btn1630 = document.createElement('button');
+        btn1630.textContent = 'Показать (16:30)';
+        btn1630.style.cssText = 'padding: 4px 8px; cursor: pointer; background: #333; color: #fff; border: 1px solid #555; border-radius: 3px; font-size: 11px;';
+        btn1630.onclick = () => { dismissedAlerts.delete('alert-1630'); showAlert('alert-1630'); };
+        panel.appendChild(btn1630);
+
+        // Кнопка очистки
+        const btnClear = document.createElement('button');
+        btnClear.textContent = 'Скрыть все';
+        btnClear.style.cssText = 'padding: 4px 8px; margin-top: 4px; cursor: pointer; background: #c62828; color: #fff; border: none; border-radius: 3px; font-size: 11px; font-weight: bold;';
+        btnClear.onclick = () => {
+            document.querySelectorAll('.cw-alert-box').forEach(el => el.remove());
+            dismissedAlerts.clear(); // Сбрасываем память, чтобы можно было тестить заново
+        };
+        panel.appendChild(btnClear);
+
+        document.body.appendChild(panel);
+    }
+
+    // Запускаем панель с небольшой задержкой, чтобы она не мешала загрузке игры
+    setTimeout(createTestPanel, 2000);
+
+})();
 })();
