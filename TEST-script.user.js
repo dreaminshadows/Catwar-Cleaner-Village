@@ -27,21 +27,14 @@
     function getMoscowTime() {
         const now = new Date();
         const formatter = new Intl.DateTimeFormat('ru-RU', {
-            timeZone: MOSCOW_TIMEZONE,
-            hour: 'numeric',
-            minute: 'numeric',
-            hour12: false
+            timeZone: MOSCOW_TIMEZONE, hour: 'numeric', minute: 'numeric', hour12: false
         });
-        
         const parts = formatter.formatToParts(now);
-        let hour = 0;
-        let minute = 0;
-        
+        let hour = 0, minute = 0;
         parts.forEach(part => {
             if (part.type === 'hour') hour = parseInt(part.value, 10);
             if (part.type === 'minute') minute = parseInt(part.value, 10);
         });
-        
         return { hour, minute };
     }
 
@@ -51,38 +44,21 @@
 
         const alertBox = document.createElement('div');
         alertBox.id = 'cw-alert-' + alertId;
-        alertBox.className = 'cw-alert-box'; // Класс для легкой очистки
+        alertBox.className = 'cw-alert-box';
         
         alertBox.style.cssText = `
-            position: fixed;
-            right: 20px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: rgba(30, 30, 30, 0.95);
-            color: #fff;
-            padding: 15px 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-            font-family: Arial, sans-serif;
-            font-size: 14px;
-            z-index: 99999;
-            border-left: 4px solid #4caf50;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            max-width: 320px;
-            animation: cwSlideIn 0.3s ease-out;
+            position: fixed; right: 20px; top: 50%; transform: translateY(-50%);
+            background: rgba(30, 30, 30, 0.95); color: #fff; padding: 15px 20px;
+            border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            font-family: Arial, sans-serif; font-size: 14px; z-index: 99999;
+            border-left: 4px solid #4caf50; display: flex; align-items: center;
+            gap: 15px; max-width: 320px; animation: cwSlideIn 0.3s ease-out;
         `;
 
         if (!document.getElementById('cw-alert-style')) {
             const style = document.createElement('style');
             style.id = 'cw-alert-style';
-            style.innerHTML = `
-                @keyframes cwSlideIn {
-                    from { opacity: 0; transform: translateY(-50%) translateX(50px); }
-                    to { opacity: 1; transform: translateY(-50%) translateX(0); }
-                }
-            `;
+            style.innerHTML = `@keyframes cwSlideIn { from { opacity: 0; transform: translateY(-50%) translateX(50px); } to { opacity: 1; transform: translateY(-50%) translateX(0); } }`;
             document.head.appendChild(style);
         }
 
@@ -93,24 +69,10 @@
 
         const closeBtn = document.createElement('button');
         closeBtn.textContent = '×';
-        closeBtn.style.cssText = `
-            background: transparent;
-            border: none;
-            color: #aaa;
-            font-size: 24px;
-            cursor: pointer;
-            padding: 0;
-            line-height: 1;
-            transition: color 0.2s;
-            flex-shrink: 0;
-        `;
+        closeBtn.style.cssText = `background: transparent; border: none; color: #aaa; font-size: 24px; cursor: pointer; padding: 0; line-height: 1; flex-shrink: 0; transition: color 0.2s;`;
         closeBtn.onmouseover = () => closeBtn.style.color = '#fff';
         closeBtn.onmouseout = () => closeBtn.style.color = '#aaa';
-        
-        closeBtn.onclick = () => {
-            alertBox.remove();
-            dismissedAlerts.add(alertId);
-        };
+        closeBtn.onclick = () => { alertBox.remove(); dismissedAlerts.add(alertId); };
         
         alertBox.appendChild(closeBtn);
         document.body.appendChild(alertBox);
@@ -135,17 +97,11 @@
     const STORAGE_KEY_ENABLED = 'cw_cleaner_enabled';
 
     const HIGHLIGHT_COLORS = {
-        online:   'rgba(76, 175, 80, 0.9)',
-        offline:  'rgba(158, 158, 158, 0.9)',
-        sleeping: 'rgba(244, 67, 54, 0.9)',
-        banned:   'rgba(0, 0, 0, 0.9)',
-        deleted:  'rgba(0, 0, 0, 0.9)'
+        online: 'rgba(76, 175, 80, 0.9)', offline: 'rgba(158, 158, 158, 0.9)',
+        sleeping: 'rgba(244, 67, 54, 0.9)', banned: 'rgba(0, 0, 0, 0.9)', deleted: 'rgba(0, 0, 0, 0.9)'
     };
     const BORDER_WIDTH = '4px';
-
-    const ACTIVE_STATUSES = {
-        online: true, offline: true, sleeping: true, banned: true, deleted: true
-    };
+    const ACTIVE_STATUSES = { online: true, offline: true, sleeping: true, banned: true, deleted: true };
 
     let isEnabled = localStorage.getItem(STORAGE_KEY_ENABLED) === 'true';
     let referenceColors = {};
@@ -158,7 +114,7 @@
                 if (Array.isArray(referenceColors[key])) referenceColors[key] = referenceColors[key].map(Number);
             }
         }
-    } catch (e) { console.warn('[CW] Ошибка загрузки цветов:', e); }
+    } catch (e) {}
 
     function saveReferenceColors() { localStorage.setItem(STORAGE_KEY_COLORS, JSON.stringify(referenceColors)); }
 
@@ -180,7 +136,6 @@
     function updateReferenceColors() {
         const cages = document.querySelectorAll('td.cage');
         let updated = false;
-
         cages.forEach(cage => {
             const onlineSpan = cage.querySelector('.online');
             if (!onlineSpan) return;
@@ -210,37 +165,21 @@
     }
 
     function clearAllHighlights() {
-        document.querySelectorAll('td.cage').forEach(cage => {
-            cage.style.boxShadow = '';
-            cage.style.backgroundColor = '';
-        });
+        document.querySelectorAll('td.cage').forEach(cage => { cage.style.boxShadow = ''; cage.style.backgroundColor = ''; });
     }
 
     function applyHighlights() {
-        if (!isEnabled) {
-            clearAllHighlights();
-            return;
-        }
-
+        if (!isEnabled) { clearAllHighlights(); return; }
         const cages = document.querySelectorAll('td.cage');
-        
         cages.forEach(cage => {
             const cageItems = cage.querySelector('.cage_items');
             if (cageItems && cageItems.style.background && cageItems.style.background.includes('things/')) {
-                if (cage.style.boxShadow) { cage.style.boxShadow = ''; cage.style.backgroundColor = ''; }
-                return;
+                if (cage.style.boxShadow) { cage.style.boxShadow = ''; cage.style.backgroundColor = ''; } return;
             }
-
             const onlineSpan = cage.querySelector('.online');
-            if (!onlineSpan) {
-                if (cage.style.boxShadow) { cage.style.boxShadow = ''; cage.style.backgroundColor = ''; }
-                return;
-            }
+            if (!onlineSpan) { if (cage.style.boxShadow) { cage.style.boxShadow = ''; cage.style.backgroundColor = ''; } return; }
             const statusSpan = onlineSpan.querySelector('span');
-            if (!statusSpan) {
-                if (cage.style.boxShadow) { cage.style.boxShadow = ''; cage.style.backgroundColor = ''; }
-                return;
-            }
+            if (!statusSpan) { if (cage.style.boxShadow) { cage.style.boxShadow = ''; cage.style.backgroundColor = ''; } return; }
 
             const computedColor = window.getComputedStyle(statusSpan).color;
             const currentRgb = parseColor(computedColor);
@@ -254,7 +193,6 @@
             if (detectedType && ACTIVE_STATUSES[detectedType]) {
                 const highlightColor = HIGHLIGHT_COLORS[detectedType];
                 const newBoxShadow = `inset 0 0 0 ${BORDER_WIDTH} ${highlightColor}`;
-                
                 let bgOpacity = '0.15';
                 if (highlightColor.includes('0, 0, 0')) bgOpacity = '0.3';
                 const newBgColor = highlightColor.replace(/[\d.]+\)$/, `${bgOpacity})`);
@@ -262,10 +200,7 @@
                 if (cage.style.boxShadow !== newBoxShadow) cage.style.boxShadow = newBoxShadow;
                 if (cage.style.backgroundColor !== newBgColor) cage.style.backgroundColor = newBgColor;
             } else {
-                if (cage.style.boxShadow) {
-                    cage.style.boxShadow = '';
-                    cage.style.backgroundColor = '';
-                }
+                if (cage.style.boxShadow) { cage.style.boxShadow = ''; cage.style.backgroundColor = ''; }
             }
         });
     }
@@ -277,46 +212,23 @@
         const btn = document.createElement('a');
         btn.id = 'cw-status-toggle-btn';
         btn.href = 'javascript:void(0)';
-        btn.style.cssText = `
-            color: inherit; text-decoration: none; cursor: pointer;
-            display: inline-flex; align-items: center;
-            font-family: inherit; font-size: inherit; padding: 0 10px;
-            font-weight: bold;
-        `;
+        btn.style.cssText = `color: inherit; text-decoration: none; cursor: pointer; display: inline-flex; align-items: center; font-family: inherit; font-size: inherit; padding: 0 10px; font-weight: bold;`;
 
         function updateBtnText() {
-            if (isEnabled) {
-                btn.textContent = 'Режим чистильщика: ON';
-                btn.style.opacity = '1';
-            } else {
-                btn.textContent = 'Режим чистильщика: OFF';
-                btn.style.opacity = '0.5';
-            }
+            if (isEnabled) { btn.textContent = 'Режим чистильщика: ON'; btn.style.opacity = '1'; }
+            else { btn.textContent = 'Режим чистильщика: OFF'; btn.style.opacity = '0.5'; }
         }
-
         updateBtnText();
 
         btn.onclick = (e) => {
-            e.preventDefault();
-            e.stopPropagation();
+            e.preventDefault(); e.stopPropagation();
             isEnabled = !isEnabled;
             localStorage.setItem(STORAGE_KEY_ENABLED, isEnabled);
             updateBtnText();
             applyHighlights();
         };
-
         nav.appendChild(btn);
     }
-
-    setInterval(() => {
-        try {
-            createToggleButton();
-            if (document.getElementById('cages') && isEnabled) {
-                updateReferenceColors();
-                applyHighlights();
-            }
-        } catch (err) {}
-    }, 100);
 
 
     // ==========================================
@@ -328,36 +240,20 @@
         const panel = document.createElement('div');
         panel.id = 'cw-test-panel';
         panel.style.cssText = `
-            position: fixed;
-            left: 10px;
-            bottom: 10px;
-            background: rgba(20, 20, 20, 0.9);
-            color: #fff;
-            padding: 10px;
-            border-radius: 6px;
-            font-family: Arial, sans-serif;
-            font-size: 12px;
-            z-index: 100000;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            border: 1px solid #555;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.5);
-            opacity: 0.7;
-            transition: opacity 0.2s;
+            position: fixed; left: 10px; bottom: 10px; background: rgba(20, 20, 20, 0.9);
+            color: #fff; padding: 10px; border-radius: 6px; font-family: Arial, sans-serif;
+            font-size: 12px; z-index: 100000; display: flex; flex-direction: column;
+            gap: 6px; border: 1px solid #555; box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+            opacity: 0.7; transition: opacity 0.2s;
         `;
-        
-        // Делаем панель чуть ярче при наведении
         panel.onmouseenter = () => panel.style.opacity = '1';
         panel.onmouseleave = () => panel.style.opacity = '0.7';
 
-        // Заголовок
         const title = document.createElement('div');
         title.textContent = 'ТЕСТ УВЕДОМЛЕНИЙ';
         title.style.cssText = 'font-weight: bold; font-size: 10px; color: #888; margin-bottom: 2px; text-align: center; letter-spacing: 1px;';
         panel.appendChild(title);
 
-        // Кнопки
         const btn11 = document.createElement('button');
         btn11.textContent = 'Показать (11:00)';
         btn11.style.cssText = 'padding: 4px 8px; cursor: pointer; background: #333; color: #fff; border: 1px solid #555; border-radius: 3px; font-size: 11px;';
@@ -376,21 +272,35 @@
         btn1630.onclick = () => { dismissedAlerts.delete('alert-1630'); showAlert('alert-1630'); };
         panel.appendChild(btn1630);
 
-        // Кнопка очистки
         const btnClear = document.createElement('button');
         btnClear.textContent = 'Скрыть все';
         btnClear.style.cssText = 'padding: 4px 8px; margin-top: 4px; cursor: pointer; background: #c62828; color: #fff; border: none; border-radius: 3px; font-size: 11px; font-weight: bold;';
         btnClear.onclick = () => {
             document.querySelectorAll('.cw-alert-box').forEach(el => el.remove());
-            dismissedAlerts.clear(); // Сбрасываем память, чтобы можно было тестить заново
+            dismissedAlerts.clear();
         };
         panel.appendChild(btnClear);
 
         document.body.appendChild(panel);
     }
 
-    // Запускаем панель с небольшой задержкой, чтобы она не мешала загрузке игры
-    setTimeout(createTestPanel, 2000);
 
-})();
+    // ==========================================
+    // ИНИЦИАЛИЗАЦИЯ (Запуск всего)
+    // ==========================================
+    // 1. Создаем кнопку и панель как можно скорее
+    setTimeout(createToggleButton, 500);
+    setTimeout(createTestPanel, 1000);
+
+    // 2. Главный цикл для проверки: не удалила ли игра наши элементы, и не нужно ли обновить подсветку
+    setInterval(() => {
+        try {
+            createToggleButton(); // Если игра стерла кнопку — вернет её
+            if (document.getElementById('cages') && isEnabled) {
+                updateReferenceColors();
+                applyHighlights();
+            }
+        } catch (err) {}
+    }, 200);
+
 })();
