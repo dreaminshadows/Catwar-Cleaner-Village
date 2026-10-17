@@ -20,7 +20,10 @@
     // БЛОК 1: УВЕДОМЛЕНИЯ ПО ВРЕМЕНИ (МОСКВА)
     // ==========================================
     const MOSCOW_TIMEZONE = 'Europe/Moscow';
-    const ALERT_TEXT = 'Рекомендуется почистить локации: Фруктовый сад, Цветочная клумба, Пшеничное поле, Дремучий лес.';
+    
+    // Тексты уведомлений
+    const ALERT_TEXT_LONG = 'Рекомендуется почистить локации: Фруктовый сад, Цветочная клумба, Пшеничное поле, Дремучий лес.';
+    const ALERT_TEXT_SHORT = 'Рекомендуется почистить локации: Фруктовый сад, Дремучий лес.';
     
     let dismissedAlerts = new Set();
 
@@ -38,9 +41,12 @@
         return { hour, minute };
     }
 
-    function showAlert(alertId) {
+    function showAlert(alertId, text) {
         if (dismissedAlerts.has(alertId)) return;
         if (document.getElementById('cw-alert-' + alertId)) return;
+
+        // НОВОЕ: Удаляем все старые уведомления, чтобы новое заменило старое
+        document.querySelectorAll('.cw-alert-box').forEach(el => el.remove());
 
         const alertBox = document.createElement('div');
         alertBox.id = 'cw-alert-' + alertId;
@@ -64,7 +70,7 @@
 
         const textContainer = document.createElement('div');
         textContainer.style.lineHeight = '1.4';
-        textContainer.textContent = ALERT_TEXT;
+        textContainer.textContent = text; // Используем переданный текст
         alertBox.appendChild(textContainer);
 
         const closeBtn = document.createElement('button');
@@ -81,9 +87,10 @@
     function checkTime() {
         if (!document.getElementById('cages')) return;
         const { hour, minute } = getMoscowTime();
-        if (hour === 11) showAlert('alert-11');
-        if (hour === 15) showAlert('alert-15');
-        if (hour === 16 && minute >= 30) showAlert('alert-1630');
+        
+        if (hour === 11) showAlert('alert-11', ALERT_TEXT_LONG);
+        if (hour === 15) showAlert('alert-15', ALERT_TEXT_LONG);
+        if (hour === 16 && minute >= 30) showAlert('alert-1630', ALERT_TEXT_SHORT);
     }
 
     setInterval(checkTime, 10000);
@@ -257,19 +264,19 @@
         const btn11 = document.createElement('button');
         btn11.textContent = 'Показать (11:00)';
         btn11.style.cssText = 'padding: 4px 8px; cursor: pointer; background: #333; color: #fff; border: 1px solid #555; border-radius: 3px; font-size: 11px;';
-        btn11.onclick = () => { dismissedAlerts.delete('alert-11'); showAlert('alert-11'); };
+        btn11.onclick = () => { dismissedAlerts.delete('alert-11'); showAlert('alert-11', ALERT_TEXT_LONG); };
         panel.appendChild(btn11);
 
         const btn15 = document.createElement('button');
         btn15.textContent = 'Показать (15:00)';
         btn15.style.cssText = 'padding: 4px 8px; cursor: pointer; background: #333; color: #fff; border: 1px solid #555; border-radius: 3px; font-size: 11px;';
-        btn15.onclick = () => { dismissedAlerts.delete('alert-15'); showAlert('alert-15'); };
+        btn15.onclick = () => { dismissedAlerts.delete('alert-15'); showAlert('alert-15', ALERT_TEXT_LONG); };
         panel.appendChild(btn15);
 
         const btn1630 = document.createElement('button');
         btn1630.textContent = 'Показать (16:30)';
         btn1630.style.cssText = 'padding: 4px 8px; cursor: pointer; background: #333; color: #fff; border: 1px solid #555; border-radius: 3px; font-size: 11px;';
-        btn1630.onclick = () => { dismissedAlerts.delete('alert-1630'); showAlert('alert-1630'); };
+        btn1630.onclick = () => { dismissedAlerts.delete('alert-1630'); showAlert('alert-1630', ALERT_TEXT_SHORT); };
         panel.appendChild(btn1630);
 
         const btnClear = document.createElement('button');
@@ -286,16 +293,14 @@
 
 
     // ==========================================
-    // ИНИЦИАЛИЗАЦИЯ (Запуск всего)
+    // ИНИЦИАЛИЗАЦИЯ
     // ==========================================
-    // 1. Создаем кнопку и панель как можно скорее
     setTimeout(createToggleButton, 500);
     setTimeout(createTestPanel, 1000);
 
-    // 2. Главный цикл для проверки: не удалила ли игра наши элементы, и не нужно ли обновить подсветку
     setInterval(() => {
         try {
-            createToggleButton(); // Если игра стерла кнопку — вернет её
+            createToggleButton();
             if (document.getElementById('cages') && isEnabled) {
                 updateReferenceColors();
                 applyHighlights();
